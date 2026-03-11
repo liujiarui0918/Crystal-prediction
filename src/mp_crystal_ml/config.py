@@ -37,6 +37,22 @@ MODEL_NAMES = ("cgcnn", "alignn", "m3gnet")
 
 
 @dataclass(frozen=True)
+class TrainingRuntimeConfig:
+    cgcnn_epochs: int = 80
+    cgcnn_patience: int = 12
+    cgcnn_batch_size: int = 128
+    cgcnn_learning_rate: float = 5e-4
+    alignn_epochs: int = 60
+    alignn_patience: int = 10
+    alignn_batch_size: int = 16
+    alignn_learning_rate: float = 5e-4
+    m3gnet_epochs: int = 60
+    m3gnet_patience: int = 10
+    m3gnet_batch_size: int = 16
+    m3gnet_learning_rate: float = 5e-4
+
+
+@dataclass(frozen=True)
 class ProjectPaths:
     root: Path = ROOT_DIR
     raw_dir: Path = ROOT_DIR / "data" / "raw"

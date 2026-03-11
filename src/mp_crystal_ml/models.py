@@ -32,6 +32,7 @@ from torch_geometric.data import Data
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import CGConv, global_mean_pool
 
+from mp_crystal_ml.config import TrainingRuntimeConfig
 from mp_crystal_ml.data import records_to_structures
 
 
@@ -187,18 +188,19 @@ def _train_cgcnn(
     task_type: str,
     splits: dict[str, list[dict[str, Any]]],
     model_dir: Path,
+    training_config: TrainingRuntimeConfig,
 ) -> ModelOutcome:
     model_dir.mkdir(parents=True, exist_ok=True)
     train_dataset = _CrystalGraphDataset(splits["train"])
     val_dataset = _CrystalGraphDataset(splits["val"])
     test_dataset = _CrystalGraphDataset(splits["test"])
-    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=64, shuffle=False)
-    test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False)
+    train_loader = DataLoader(train_dataset, batch_size=training_config.cgcnn_batch_size, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=training_config.cgcnn_batch_size, shuffle=False)
+    test_loader = DataLoader(test_dataset, batch_size=training_config.cgcnn_batch_size, shuffle=False)
 
     device = _device()
     model = _CGCNN().to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=training_config.cgcnn_learning_rate, weight_decay=1e-5)
 
     train_targets = np.asarray([float(record["target"]) for record in splits["train"]], dtype=float)
     target_mean = float(train_targets.mean()) if task_type == "regression" else 0.0
@@ -208,11 +210,11 @@ def _train_cgcnn(
 
     best_score = np.inf if task_type == "regression" else -np.inf
     best_path = model_dir / "cgcnn.pt"
-    patience = 6
+    patience = training_config.cgcnn_patience
     patience_left = patience
     history: list[dict[str, float]] = []
 
-    for epoch in range(1, 26):
+    for epoch in range(1, training_config.cgcnn_epochs + 1):
         model.train()
         train_loss = 0.0
         for batch in train_loader:
@@ -328,6 +330,7 @@ def _train_alignn(
     splits: dict[str, list[dict[str, Any]]],
     model_dir: Path,
     random_state: int,
+    training_config: TrainingRuntimeConfig,
 ) -> ModelOutcome:
     model_dir.mkdir(parents=True, exist_ok=True)
     del random_state
@@ -336,19 +339,19 @@ def _train_alignn(
     test_dataset = _ALIGNNGraphDataset(splits["test"])
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
-        batch_size=16,
+        batch_size=training_config.alignn_batch_size,
         shuffle=True,
         collate_fn=_collate_alignn_graphs,
     )
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
-        batch_size=16,
+        batch_size=training_config.alignn_batch_size,
         shuffle=False,
         collate_fn=_collate_alignn_graphs,
     )
     test_loader = torch.utils.data.DataLoader(
         test_dataset,
-        batch_size=16,
+        batch_size=training_config.alignn_batch_size,
         shuffle=False,
         collate_fn=_collate_alignn_graphs,
     )
@@ -365,7 +368,7 @@ def _train_alignn(
         num_classes=2,
     )
     model = ALIGNN(alignn_config).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=training_config.alignn_learning_rate, weight_decay=1e-5)
 
     train_targets = np.asarray([float(record["target"]) for record in splits["train"]], dtype=float)
     target_mean = float(train_targets.mean()) if task_type == "regression" else 0.0
@@ -375,11 +378,11 @@ def _train_alignn(
 
     best_score = np.inf if task_type == "regression" else -np.inf
     best_path = model_dir / "alignn.pt"
-    patience = 6
+    patience = training_config.alignn_patience
     patience_left = patience
     history: list[dict[str, float]] = []
 
-    for epoch in range(1, 21):
+    for epoch in range(1, training_config.alignn_epochs + 1):
         model.train()
         train_loss = 0.0
         for graph, line_graph, lattice, target in train_loader:
@@ -512,6 +515,7 @@ def _train_m3gnet(
     task_type: str,
     splits: dict[str, list[dict[str, Any]]],
     model_dir: Path,
+    training_config: TrainingRuntimeConfig,
 ) -> ModelOutcome:
     model_dir.mkdir(parents=True, exist_ok=True)
     converter = Structure2Graph(element_types=DEFAULT_ELEMENTS, cutoff=5.0)
@@ -542,9 +546,9 @@ def _train_m3gnet(
     val_dataset = build_dataset("val", val_structures, val_targets)
     test_dataset = build_dataset("test", test_structures, test_targets)
     collate = partial(collate_fn_graph, include_line_graph=True)
-    train_loader = GraphDataLoader(train_dataset, batch_size=16, shuffle=True, collate_fn=collate)
-    val_loader = GraphDataLoader(val_dataset, batch_size=16, shuffle=False, collate_fn=collate)
-    test_loader = GraphDataLoader(test_dataset, batch_size=16, shuffle=False, collate_fn=collate)
+    train_loader = GraphDataLoader(train_dataset, batch_size=training_config.m3gnet_batch_size, shuffle=True, collate_fn=collate)
+    val_loader = GraphDataLoader(val_dataset, batch_size=training_config.m3gnet_batch_size, shuffle=False, collate_fn=collate)
+    test_loader = GraphDataLoader(test_dataset, batch_size=training_config.m3gnet_batch_size, shuffle=False, collate_fn=collate)
 
     device = _dgl_device()
     model = M3GNet(
@@ -555,7 +559,7 @@ def _train_m3gnet(
         threebody_cutoff=4.0,
         task_type=task_type,
     ).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-5)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=training_config.m3gnet_learning_rate, weight_decay=1e-5)
     target_mean = float(train_targets.mean()) if task_type == "regression" else 0.0
     target_std = float(train_targets.std(ddof=0)) if task_type == "regression" else 1.0
     if target_std == 0:
@@ -563,11 +567,11 @@ def _train_m3gnet(
 
     best_score = np.inf if task_type == "regression" else -np.inf
     best_path = model_dir / "m3gnet.pt"
-    patience = 5
+    patience = training_config.m3gnet_patience
     patience_left = patience
     history: list[dict[str, float]] = []
 
-    for epoch in range(1, 19):
+    for epoch in range(1, training_config.m3gnet_epochs + 1):
         model.train()
         train_loss = 0.0
         for graph, _lattice, line_graph, state_attr, labels in train_loader:
@@ -682,15 +686,27 @@ def train_model_suite(
     splits: dict[str, list[dict[str, Any]]],
     model_root: Path,
     random_state: int,
+    training_config: TrainingRuntimeConfig,
 ) -> dict[str, ModelOutcome]:
     outcomes = {
-        "cgcnn": _train_cgcnn(task_type=task_type, splits=splits, model_dir=model_root / "cgcnn"),
+        "cgcnn": _train_cgcnn(
+            task_type=task_type,
+            splits=splits,
+            model_dir=model_root / "cgcnn",
+            training_config=training_config,
+        ),
         "alignn": _train_alignn(
             task_type=task_type,
             splits=splits,
             model_dir=model_root / "alignn",
             random_state=random_state,
+            training_config=training_config,
         ),
-        "m3gnet": _train_m3gnet(task_type=task_type, splits=splits, model_dir=model_root / "m3gnet"),
+        "m3gnet": _train_m3gnet(
+            task_type=task_type,
+            splits=splits,
+            model_dir=model_root / "m3gnet",
+            training_config=training_config,
+        ),
     }
     return outcomes

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from mp_crystal_ml.config import MATBENCH_TASKS, MODEL_NAMES, ProjectPaths
+from mp_crystal_ml.config import MATBENCH_TASKS, MODEL_NAMES, ProjectPaths, TrainingRuntimeConfig
 from mp_crystal_ml.data import (
     load_task_records,
     split_records,
@@ -37,6 +37,18 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Discard cached sampled Matbench subsets and fetch them again",
     )
+    parser.add_argument("--cgcnn-epochs", type=int, default=80, help="Maximum epochs for CGCNN")
+    parser.add_argument("--cgcnn-patience", type=int, default=12, help="Early stopping patience for CGCNN")
+    parser.add_argument("--cgcnn-batch-size", type=int, default=128, help="Batch size for CGCNN")
+    parser.add_argument("--cgcnn-learning-rate", type=float, default=5e-4, help="Learning rate for CGCNN")
+    parser.add_argument("--alignn-epochs", type=int, default=60, help="Maximum epochs for ALIGNN")
+    parser.add_argument("--alignn-patience", type=int, default=10, help="Early stopping patience for ALIGNN")
+    parser.add_argument("--alignn-batch-size", type=int, default=16, help="Batch size for ALIGNN")
+    parser.add_argument("--alignn-learning-rate", type=float, default=5e-4, help="Learning rate for ALIGNN")
+    parser.add_argument("--m3gnet-epochs", type=int, default=60, help="Maximum epochs for M3GNet")
+    parser.add_argument("--m3gnet-patience", type=int, default=10, help="Early stopping patience for M3GNet")
+    parser.add_argument("--m3gnet-batch-size", type=int, default=16, help="Batch size for M3GNet")
+    parser.add_argument("--m3gnet-learning-rate", type=float, default=5e-4, help="Learning rate for M3GNet")
     return parser.parse_args()
 
 
@@ -71,7 +83,12 @@ def _sorted_leaderboard(task_name: str, rows: list[dict[str, object]]) -> list[d
     return sorted(rows, key=sort_value, reverse=not meta["sort_ascending"])
 
 
-def run_pipeline(sample_size: int, random_state: int, force_fetch: bool) -> dict[str, object]:
+def run_pipeline(
+    sample_size: int,
+    random_state: int,
+    force_fetch: bool,
+    training_config: TrainingRuntimeConfig,
+) -> dict[str, object]:
     paths = ProjectPaths()
     _ensure_directories(paths)
 
@@ -92,6 +109,7 @@ def run_pipeline(sample_size: int, random_state: int, force_fetch: bool) -> dict
             splits=splits,
             model_root=paths.models_dir / task_name,
             random_state=random_state,
+            training_config=training_config,
         )
 
         leaderboard = []
@@ -161,6 +179,7 @@ def run_pipeline(sample_size: int, random_state: int, force_fetch: bool) -> dict
             "sample_size_per_task": sample_size,
             "random_state": random_state,
         },
+        "training_config": training_config.__dict__,
         "tasks": tasks_payload,
     }
     write_metrics_report(metrics_payload, markdown_path=paths.report_md, json_path=paths.metrics_json)
@@ -169,10 +188,25 @@ def run_pipeline(sample_size: int, random_state: int, force_fetch: bool) -> dict
 
 def main() -> None:
     args = parse_args()
+    training_config = TrainingRuntimeConfig(
+        cgcnn_epochs=args.cgcnn_epochs,
+        cgcnn_patience=args.cgcnn_patience,
+        cgcnn_batch_size=args.cgcnn_batch_size,
+        cgcnn_learning_rate=args.cgcnn_learning_rate,
+        alignn_epochs=args.alignn_epochs,
+        alignn_patience=args.alignn_patience,
+        alignn_batch_size=args.alignn_batch_size,
+        alignn_learning_rate=args.alignn_learning_rate,
+        m3gnet_epochs=args.m3gnet_epochs,
+        m3gnet_patience=args.m3gnet_patience,
+        m3gnet_batch_size=args.m3gnet_batch_size,
+        m3gnet_learning_rate=args.m3gnet_learning_rate,
+    )
     metrics = run_pipeline(
         sample_size=args.sample_size,
         random_state=args.random_state,
         force_fetch=args.force_fetch,
+        training_config=training_config,
     )
     summary_rows = [
         {
