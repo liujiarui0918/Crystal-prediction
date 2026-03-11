@@ -11,38 +11,38 @@
 ### matbench_mp_gap
 
 - Task type: regression
-- Samples used: 64
-- Mean sites per structure: 33.00
-| model   |    mae |   rmse |      r2 |
-|:--------|-------:|-------:|--------:|
-| alignn  | 0.6822 | 0.7795 |  0.6931 |
-| m3gnet  | 1.1878 | 1.3023 |  0.1435 |
-| cgcnn   | 1.3059 | 1.4886 | -0.1192 |
+- Samples used: 8
+- Mean sites per structure: 38.75
+| model   |    mae |   rmse | r2   |
+|:--------|-------:|-------:|:-----|
+| cgcnn   | 0.1054 | 0.1054 |      |
+| alignn  | 1.0575 | 1.0575 |      |
+| m3gnet  | 1.8308 | 1.8308 |      |
 
-Best model: alignn
+Best model: cgcnn
 
 ### matbench_mp_e_form
 
 - Task type: regression
-- Samples used: 64
-- Mean sites per structure: 31.14
-| model   |    mae |   rmse |      r2 |
-|:--------|-------:|-------:|--------:|
-| alignn  | 1.0211 | 1.2797 |  0.0469 |
-| m3gnet  | 1.0777 | 1.5463 | -0.3917 |
-| cgcnn   | 2.5141 | 2.7868 | -3.5202 |
+- Samples used: 8
+- Mean sites per structure: 46.00
+| model   |    mae |   rmse | r2   |
+|:--------|-------:|-------:|:-----|
+| m3gnet  | 0.4164 | 0.4164 |      |
+| alignn  | 0.9579 | 0.9579 |      |
+| cgcnn   | 1.8443 | 1.8443 |      |
 
-Best model: alignn
+Best model: m3gnet
 
 ### matbench_mp_is_metal
 
 - Task type: classification
-- Samples used: 64
-- Mean sites per structure: 30.78
-| model   |   accuracy |     f1 |   roc_auc |
-|:--------|-----------:|-------:|----------:|
-| alignn  |     0.7143 | 0.5    |    1      |
-| m3gnet  |     0.8571 | 0.8571 |    0.9167 |
-| cgcnn   |     0.7143 | 0.5    |    0.75   |
+- Samples used: 8
+- Mean sites per structure: 24.50
+| model   |   accuracy |   f1 | roc_auc   |
+|:--------|-----------:|-----:|:----------|
+| cgcnn   |          0 |    0 |           |
+| alignn  |          0 |    0 |           |
+| m3gnet  |          0 |    0 |           |
 
-Best model: alignn
+Best model: cgcnn

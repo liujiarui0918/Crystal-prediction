@@ -52,7 +52,7 @@ def _device() -> torch.device:
 
 
 def _dgl_device() -> torch.device:
-    return torch.device("cpu")
+    return _device()
 
 
 def _regression_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
@@ -93,7 +93,6 @@ class _CrystalGraphDataset(torch.utils.data.Dataset):
             centers=np.linspace(0.0, cutoff, 32, dtype=float),
             width=0.4,
         )
-        self.graphs = [self._build_graph(record) for record in records]
 
     def _build_graph(self, record: dict[str, Any]) -> Data:
         structure = Structure.from_dict(record["structure"])
@@ -117,10 +116,10 @@ class _CrystalGraphDataset(torch.utils.data.Dataset):
         )
 
     def __len__(self) -> int:
-        return len(self.graphs)
+        return len(self.records)
 
     def __getitem__(self, index: int) -> Data:
-        return self.graphs[index]
+        return self._build_graph(self.records[index])
 
 
 class _CGCNN(nn.Module):
@@ -150,7 +149,7 @@ class _CGCNN(nn.Module):
 
 class _ALIGNNGraphDataset(torch.utils.data.Dataset):
     def __init__(self, records: list[dict[str, Any]]):
-        self.samples = [self._build_sample(record) for record in records]
+        self.records = records
 
     def _build_sample(self, record: dict[str, Any]):
         structure = Structure.from_dict(record["structure"])
@@ -168,10 +167,10 @@ class _ALIGNNGraphDataset(torch.utils.data.Dataset):
         return graph, line_graph, lattice, target
 
     def __len__(self) -> int:
-        return len(self.samples)
+        return len(self.records)
 
     def __getitem__(self, index: int):
-        return self.samples[index]
+        return self._build_sample(self.records[index])
 
 
 def _collate_alignn_graphs(batch):

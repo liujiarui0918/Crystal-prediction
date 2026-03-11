@@ -6,7 +6,7 @@
       "matbench_mp_e_form",
       "matbench_mp_is_metal"
     ],
-    "sample_size_per_task": 64,
+    "sample_size_per_task": 8,
     "random_state": 42
   },
   "tasks": {
@@ -16,61 +16,61 @@
       "target_display": "PBE band gap",
       "unit": "eV",
       "dataset_summary": {
-        "num_samples": 64,
-        "mean_num_sites": 33.0,
-        "mean_num_elements": 3.21875,
-        "mean_density": 5.104388794382469,
-        "target_mean": 1.4648515625,
-        "target_std": 1.7620395896864969
+        "num_samples": 8,
+        "mean_num_sites": 38.75,
+        "mean_num_elements": 3.75,
+        "mean_density": 5.088854915225341,
+        "target_mean": 2.066675,
+        "target_std": 1.3397269887462144
       },
       "split_sizes": {
-        "train": 51,
-        "val": 6,
-        "test": 7
+        "train": 6,
+        "val": 1,
+        "test": 1
       },
       "leaderboard": [
         {
+          "model": "cgcnn",
+          "mae": 0.10539698600769043,
+          "rmse": 0.10539698600769043,
+          "r2": null
+        },
+        {
           "model": "alignn",
-          "mae": 0.6821610161236354,
-          "rmse": 0.77947348634216,
-          "r2": 0.6931428602361159
+          "mae": 1.057487964630127,
+          "rmse": 1.057487964630127,
+          "r2": null
         },
         {
           "model": "m3gnet",
-          "mae": 1.1877895934241158,
-          "rmse": 1.3022899488072655,
-          "r2": 0.1434575027906032
-        },
-        {
-          "model": "cgcnn",
-          "mae": 1.3058700050626482,
-          "rmse": 1.488606929154879,
-          "r2": -0.1191636871429973
+          "mae": 1.8307521343231201,
+          "rmse": 1.8307521343231201,
+          "r2": null
         }
       ],
-      "best_model": "alignn",
+      "best_model": "cgcnn",
       "model_artifacts": {
         "cgcnn": {
           "metrics": {
-            "mae": 1.3058700050626482,
-            "rmse": 1.488606929154879,
-            "r2": -0.1191636871429973
+            "mae": 0.10539698600769043,
+            "rmse": 0.10539698600769043,
+            "r2": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_gap/cgcnn/cgcnn.pt"
         },
         "alignn": {
           "metrics": {
-            "mae": 0.6821610161236354,
-            "rmse": 0.77947348634216,
-            "r2": 0.6931428602361159
+            "mae": 1.057487964630127,
+            "rmse": 1.057487964630127,
+            "r2": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_gap/alignn/alignn.pt"
         },
         "m3gnet": {
           "metrics": {
-            "mae": 1.1877895934241158,
-            "rmse": 1.3022899488072655,
-            "r2": 0.1434575027906032
+            "mae": 1.8307521343231201,
+            "rmse": 1.8307521343231201,
+            "r2": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_gap/m3gnet/m3gnet.pt"
         }
@@ -82,61 +82,61 @@
       "target_display": "formation energy per atom",
       "unit": "eV/atom",
       "dataset_summary": {
-        "num_samples": 64,
-        "mean_num_sites": 31.140625,
-        "mean_num_elements": 3.421875,
-        "mean_density": 5.384816528192648,
-        "target_mean": -1.6943720160212383,
-        "target_std": 1.2547201015652696
+        "num_samples": 8,
+        "mean_num_sites": 46.0,
+        "mean_num_elements": 3.0,
+        "mean_density": 5.873721085071277,
+        "target_mean": -1.4122237286555173,
+        "target_std": 0.9791613352446178
       },
       "split_sizes": {
-        "train": 51,
-        "val": 6,
-        "test": 7
+        "train": 6,
+        "val": 1,
+        "test": 1
       },
       "leaderboard": [
         {
-          "model": "alignn",
-          "mae": 1.0211290993860789,
-          "rmse": 1.2796654297719832,
-          "r2": 0.0468860983493693
+          "model": "m3gnet",
+          "mae": 0.4164009690284729,
+          "rmse": 0.4164009690284729,
+          "r2": null
         },
         {
-          "model": "m3gnet",
-          "mae": 1.0776951078857695,
-          "rmse": 1.5463292580303607,
-          "r2": -0.39173284013096943
+          "model": "alignn",
+          "mae": 0.9578649401664734,
+          "rmse": 0.9578649401664734,
+          "r2": null
         },
         {
           "model": "cgcnn",
-          "mae": 2.5140572509595325,
-          "rmse": 2.7867854663215437,
-          "r2": -3.5202140683496523
+          "mae": 1.8443358540534973,
+          "rmse": 1.8443358540534973,
+          "r2": null
         }
       ],
-      "best_model": "alignn",
+      "best_model": "m3gnet",
       "model_artifacts": {
         "cgcnn": {
           "metrics": {
-            "mae": 2.5140572509595325,
-            "rmse": 2.7867854663215437,
-            "r2": -3.5202140683496523
+            "mae": 1.8443358540534973,
+            "rmse": 1.8443358540534973,
+            "r2": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_e_form/cgcnn/cgcnn.pt"
         },
         "alignn": {
           "metrics": {
-            "mae": 1.0211290993860789,
-            "rmse": 1.2796654297719832,
-            "r2": 0.0468860983493693
+            "mae": 0.9578649401664734,
+            "rmse": 0.9578649401664734,
+            "r2": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_e_form/alignn/alignn.pt"
         },
         "m3gnet": {
           "metrics": {
-            "mae": 1.0776951078857695,
-            "rmse": 1.5463292580303607,
-            "r2": -0.39173284013096943
+            "mae": 0.4164009690284729,
+            "rmse": 0.4164009690284729,
+            "r2": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_e_form/m3gnet/m3gnet.pt"
         }
@@ -148,60 +148,60 @@
       "target_display": "is metal",
       "unit": "boolean",
       "dataset_summary": {
-        "num_samples": 64,
-        "mean_num_sites": 30.78125,
-        "mean_num_elements": 3.453125,
-        "mean_density": 5.624798789538191,
-        "positive_fraction": 0.4375
+        "num_samples": 8,
+        "mean_num_sites": 24.5,
+        "mean_num_elements": 3.625,
+        "mean_density": 4.262677990360086,
+        "positive_fraction": 0.375
       },
       "split_sizes": {
-        "train": 51,
-        "val": 6,
-        "test": 7
+        "train": 6,
+        "val": 1,
+        "test": 1
       },
       "leaderboard": [
         {
+          "model": "cgcnn",
+          "accuracy": 0.0,
+          "f1": 0.0,
+          "roc_auc": null
+        },
+        {
           "model": "alignn",
-          "accuracy": 0.7142857142857143,
-          "f1": 0.5,
-          "roc_auc": 1.0
+          "accuracy": 0.0,
+          "f1": 0.0,
+          "roc_auc": null
         },
         {
           "model": "m3gnet",
-          "accuracy": 0.8571428571428571,
-          "f1": 0.8571428571428571,
-          "roc_auc": 0.9166666666666666
-        },
-        {
-          "model": "cgcnn",
-          "accuracy": 0.7142857142857143,
-          "f1": 0.5,
-          "roc_auc": 0.75
+          "accuracy": 0.0,
+          "f1": 0.0,
+          "roc_auc": null
         }
       ],
-      "best_model": "alignn",
+      "best_model": "cgcnn",
       "model_artifacts": {
         "cgcnn": {
           "metrics": {
-            "accuracy": 0.7142857142857143,
-            "f1": 0.5,
-            "roc_auc": 0.75
+            "accuracy": 0.0,
+            "f1": 0.0,
+            "roc_auc": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_is_metal/cgcnn/cgcnn.pt"
         },
         "alignn": {
           "metrics": {
-            "accuracy": 0.7142857142857143,
-            "f1": 0.5,
-            "roc_auc": 1.0
+            "accuracy": 0.0,
+            "f1": 0.0,
+            "roc_auc": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_is_metal/alignn/alignn.pt"
         },
         "m3gnet": {
           "metrics": {
-            "accuracy": 0.8571428571428571,
-            "f1": 0.8571428571428571,
-            "roc_auc": 0.9166666666666666
+            "accuracy": 0.0,
+            "f1": 0.0,
+            "roc_auc": null
           },
           "model_path": "/root/materials-project-ml/models/matbench_mp_is_metal/m3gnet/m3gnet.pt"
         }
